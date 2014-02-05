@@ -8,20 +8,22 @@
 			var planet=document.getElementById("greenPlanet");
 			planet.innerHTML="red Alert";
 			showTemp();
+
 		}
 		function showTemp(){
 			var tempArray= new Array();
 			tempArray[0]=59;
 			tempArray[1]=60;
-			tempArray=[2]=70
+			tempArray[2]=70;
 			tempArray[4]=9;
-			for(var i=0;i<5;i++){
+			for(var i=0;i<533;i++){
 				var temp=tempArray[i];
 				var id="temp"+i;
 				var li=document.getElementById(id);
-				li.innerHTML="The temperature at "+i+"was"+tempArray[i];
+				li.innerHTML="The temperature at "+i+" was "+tempArray[i];
 			}
-			
+			alert("hi");
+
 		}
 		window.onload=init;
 		</script>
