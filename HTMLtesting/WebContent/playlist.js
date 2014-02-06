@@ -11,6 +11,15 @@ function init(){
 function handleButton(){
 	var textInput=document.getElementById("songTextInput");
 	var songName=textInput.value;
-	alert("songName");//Testing clicking button working correctly.
+	
+	var li=document.createElement("li");
+	li.innerHTML=songName;
+	var ul=document.getElementById("playlist");
+	ul.appendChild(li);
+	textInput.value="";
+	
+	
+	
+	//alert(songName);//Testing clicking button working correctly.
 	
 }
