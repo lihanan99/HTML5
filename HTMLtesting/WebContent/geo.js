@@ -8,12 +8,18 @@ window.onload=getMyLocation;
 
 function getMyLocation(){
 	if(navigator.geolocation){
-		alert("we get some location ~");
+		//alert("we get some location ~");
+		navigator.geolocation.getCurrentPosition(displayLocation);
 	}else{
-		alert("sth wrong with location");
+		alert("no geolocation suppoer for this browser ");
 	}
-	
-	
+
+}
+function displayLocation(position){
+	var latitude = position.coords.latitude;
+	var longitude = position.coords.longitude;
+	var div= document.getElementById("showLocation");
+	div.innerHTML="ur latitude is "+latitude+", and your longitude is "+longitude+" .";
 	
 	
 	
