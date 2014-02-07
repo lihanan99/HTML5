@@ -10,12 +10,14 @@ function getMyLocation(){
 	if(navigator.geolocation){
 		//alert("we get some location ~");
 		navigator.geolocation.getCurrentPosition(displayLocation);
+		alert("hi");
 	}else{
 		alert("no geolocation suppoer for this browser ");
 	}
 
 }
 function displayLocation(position){
+	alert("into display location function ~!");
 	var latitude = position.coords.latitude;
 	var longitude = position.coords.longitude;
 	var div= document.getElementById("showLocation");
