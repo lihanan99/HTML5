@@ -48,7 +48,7 @@ function displayErrorMsg(error){
 
 function showMap(coords){//show the google map on the page
 	var title = "Your Location";
-	var content = "You are here: " + coords.latitude + ", " + coords.longitude;
+	var content = "HI~ You are here: " + coords.latitude + ", " + coords.longitude;
 	var googleLatiAndLong= 
 			new google.maps.LatLng(coords.latitude, coords.longitude);
 	var mapOptions={
@@ -58,7 +58,7 @@ function showMap(coords){//show the google map on the page
 	};
 	var div=document.getElementById("map");
 	map = new google.maps.Map(div,mapOptions);//shows the map to the selected <div> part.	
-	addMarker(map, googleLatAndLong, title, content);
+	addMarker(map, googleLatiAndLong, title, content);
 }
 
 //adding the marker to the map, with title and content when clicked on it. 
@@ -66,18 +66,20 @@ function addMarker(map, latlong,title,content){
 	var markerOptions = {
 			position : latlong,
 			map : map,
-			title : tile ,
+			title : title ,
 			clickable : true
 			
 	};
-	var marker = new google.maps.Markers(markerOptions);
+	var marker = new google.maps.Marker(markerOptions);
 	var infoWindowOptions = {
-			
-			
-			
-			
-			
-	}
+			content : content,
+			position : latlong			
+	};
+	var infoWindow = new google.maps.InfoWindow(infoWindowOptions);
+	
+	google.maps.event.addListener(marker,"click",function(){
+		infoWindow.open(map);
+	});
 	
 	
 	
