@@ -248,92 +248,85 @@ var lineFull = function()
 				}
 			}
 			//redraw the cells
-			drawBlock();      3
+			drawBlock();      
 		}
 	}
 }
-// 控制方块向下掉。
+// Moving cells down
 var moveDown = function()
 {
-	// 定义能否下掉的旗标
-	var canDown = true;    //①
-	// 遍历每个方块，判断是否能向下掉
+	// Testing if cells can go down by checking every cells of the .
+	var canDown = true;    
 	for (var i = 0 ; i < currentFall.length ; i++)
 	{
-		// 判断是否已经到“最底下”
+		// Checking if cells are at the end of the Tetris board.
 		if(currentFall[i].y >= TETRIS_ROWS - 1)
 		{
 			canDown = false;
 			break;
 		}
-		// 判断下一格是否“有方块”, 如果下一格有方块，不能向下掉
+		// Checking if the cell beneath is NO_BLOCK or not. 
 		if(tetris_status[currentFall[i].y + 1][currentFall[i].x] != NO_BLOCK)
 		{
 			canDown = false;
 			break;
 		}
 	}
-	// 如果能向下“掉”
+	// If it can move down
 	if(canDown)
 	{
-		// 将下移前的每个方块的背景色涂成白色
+		// Paint every cell to white first 
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = 'white';
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1 
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2 , CELL_SIZE - 2);
 		}
-		// 遍历每个方块, 控制每个方块的y坐标加1。
-		// 也就是控制方块都下掉一格
+		// Then adding 1 to every cell'y coordinate 
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			cur.y ++;
+			cur.y=cur.y+1;
 		}
-		// 将下移后的每个方块的背景色涂成该方块的颜色值
+		// Adding colors to the every cell of Tetriminos to their original color
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = colors[cur.color];
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1 
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2 , CELL_SIZE - 2);
 		}
 	}
-	// 不能向下掉
+	// if it cannot go down.
 	else
 	{
-		// 遍历每个方块, 把每个方块的值记录到tetris_status数组中
+		// Go through every cell in the Tetriminos & record them in Local storage
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 如果有方块已经到最上面了，表明输了
+			//If any cell has a height that is less than 2, it means player lose.
 			if(cur.y < 2)
 			{
-				// 清空Local Storage中的当前积分值、游戏状态、当前速度
+				// Remove current properties in the localStorate
 				localStorage.removeItem("curScore");
 				localStorage.removeItem("tetris_status");
 				localStorage.removeItem("curSpeed");
-				if(confirm("您已经输了！是否参数排名？"))
+				if(confirm("U lost"))
 				{
-					// 读取Local Storage里的maxScore记录
+					// Compare and save the hightest score 
 					maxScore = localStorage.getItem("maxScore");
 					maxScore = maxScore == null ? 0 : maxScore ;
-					// 如果当前积分大于localStorage中记录的最高积分
 					if(curScore >= maxScore)
 					{
-						// 记录最高积分
 						localStorage.setItem("maxScore" , curScore);
 					}
 				}
-				// 游戏结束
+				// ending the game;
 				isPlaying = false;
-				// 清除计时器
+				// clear the timer.
 				clearInterval(curTimer);
+				// Game finished.
 				return;
 			}
 			// 把每个方块当前所在位置赋为当前方块的颜色值
