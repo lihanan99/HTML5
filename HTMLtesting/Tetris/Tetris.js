@@ -329,142 +329,131 @@ var moveDown = function()
 				// Game finished.
 				return;
 			}
-			// 把每个方块当前所在位置赋为当前方块的颜色值
+			// Record the current status to the Tetris board
 			tetris_status[cur.y][cur.x] = cur.color;
 		}
-		// 判断是否有“可消除”的行
+		// Checking if certain part of the Tetris can be cleared up.
 		lineFull();
-		// 使用Local Storage记录俄罗斯方块的游戏状态
+		// Store the current tetris status to the local storage.
 		localStorage.setItem("tetris_status" , JSON.stringify(tetris_status));
-		// 开始一组新的方块。
+		// Start a new Tetriminos.
 		initBlock();
 	}
 }
-// 定义左移方块的函数
+// Moving cells left.
 var moveLeft = function()
 {
-	// 定义能否左移的旗标
+	// Checking if cells can move left or not
 	var canLeft = true;
 	for (var i = 0 ; i < currentFall.length ; i++)
 	{
-		// 如果已经到了最左边，不能左移
+		// If any cell is at the left-most side, then it can't move
 		if(currentFall[i].x <= 0)
 		{
-			canLeft = false;
+			canLeft = false;//Set canLeft false if it can't move.
 			break;
 		}
-		// 或左边的位置已有方块，不能左移
+		// Or if left side contain a cell that is not NO_BLOCK.
 		if (tetris_status[currentFall[i].y][currentFall[i].x - 1] != NO_BLOCK)
 		{
 			canLeft = false;
 			break;
 		}
 	}
-	// 如果能左移
+	// If it can move left. 
 	if(canLeft)
 	{
-		// 将左移前的每个方块的背景色涂成白色
+		// First , change the Tetriminos color to white.
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = 'white';
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE +1 
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2, CELL_SIZE - 2);
 		}
-		// 左移所有正在下掉的方块
+		// Move every cells to the left.
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
 			cur.x --;
 		}
-		// 将左移后的每个方块的背景色涂成方块对应的颜色
+		// Adding color to the moved Tetriminos
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = colors[cur.color];
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1  
 				, cur.y * CELL_SIZE + 1, CELL_SIZE - 2 , CELL_SIZE - 2);
 		}
 	}
 }
-// 定义右移方块的函数
+// Similar function to move right
 var moveRight = function()
 {
-	// 定义能否右移的旗标
+	// checking if it can go right.
 	var canRight = true;
 	for (var i = 0 ; i < currentFall.length ; i++)
 	{
-		// 如果已到了最右边，不能右移
 		if(currentFall[i].x >= TETRIS_COLS - 1)
 		{
 			canRight = false;
 			break;
 		}
-		// 如果右边的位置已有方块，不能右移
 		if (tetris_status[currentFall[i].y][currentFall[i].x + 1] != NO_BLOCK)
 		{
 			canRight = false;
 			break;
 		}
 	}
-	// 如果能右移
+	// If it can go right
 	if(canRight)
 	{		
-		// 将右移前的每个方块的背景色涂成白色
+		// move every cell to the right. 
+		// First change each cell's color to white.
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = 'white';
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1  
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2 , CELL_SIZE - 2);
 		}
-		// 右移所有正在下掉的方块
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
 			cur.x ++;
 		}
-		// 将右移后的每个方块的背景色涂成各方块对应的颜色
+		// Adding color back
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = colors[cur.color];
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1 
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2, CELL_SIZE -2);
 		}
 	}
 }
-// 定义旋转方块的函数
+// Rotate the Tetriminos.
 var rotate = function()
 {
-	// 定义记录能否旋转的旗标
+	// If it can rotate or Not.
 	var canRotate = true;
 	for (var i = 0 ; i < currentFall.length ; i++)
 	{
 		var preX = currentFall[i].x;
 		var preY = currentFall[i].y;
-		// 始终以第三个方块作为旋转的中心,
-		// i == 2时，说明是旋转的中心
+		//set the center of rotation as the third cells in the Tetriminos.
 		if(i != 2)
 		{
-			// 计算方块旋转后的x、y坐标
+			// Calculate the position of the cells after rotate.
 			var afterRotateX = currentFall[2].x + preY - currentFall[2].y;
 			var afterRotateY = currentFall[2].y + currentFall[2].x - preX;
-			// 如果旋转后所在位置已有方块，表明不能旋转
+			// checking the rotated position is valid or Not
 			if(tetris_status[afterRotateY][afterRotateX + 1] != NO_BLOCK)
 			{
 				canRotate = false;
 				break;
 			}
-			// 如果旋转后的坐标已经超出了最左边边界
+			// checking if rotated Tetriminos is position is less than 0 ( out of border);
 			if(afterRotateX < 0 || tetris_status[afterRotateY - 1][afterRotateX] != NO_BLOCK)
 			{
 				moveRight();
@@ -477,7 +466,7 @@ var rotate = function()
 				moveRight();
 				break;
 			}
-			// 如果旋转后的坐标已经超出了最右边边界
+			//  checking if rotated Tetriminos is position is greater than TETRIS_COLS - 1 ( out of border);
 			if(afterRotateX >= TETRIS_COLS - 1 || 
 				tetris_status[afterRotateY][afterRotateX+1] != NO_BLOCK)
 			{
@@ -494,25 +483,22 @@ var rotate = function()
 			}
 		}
 	}
-	// 如果能旋转
+	// If it can be rotated 
 	if(canRotate)
 	{
-		// 将旋转移前的每个方块的背景色涂成白色
+		// Set the orginal color to white for every cell
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = 'white';
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1  
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2, CELL_SIZE - 2);
 		}
+		//Rotate the  Tetriminos
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var preX = currentFall[i].x;
 			var preY = currentFall[i].y;
-			// 始终以第三个方块作为旋转的中心,
-			// i == 2时，说明是旋转的中心
 			if(i != 2)
 			{
 				currentFall[i].x = currentFall[2].x + 
@@ -521,43 +507,41 @@ var rotate = function()
 					currentFall[2].x - preX;
 			}
 		}
-		// 将旋转后的每个方块的背景色涂成各方块对应的颜色
+		// Adding color to the rotated Tetriminos
 		for (var i = 0 ; i < currentFall.length ; i++)
 		{
 			var cur = currentFall[i];
-			// 设置填充颜色
 			tetris_ctx.fillStyle = colors[cur.color];
-			// 绘制矩形
 			tetris_ctx.fillRect(cur.x * CELL_SIZE + 1 
 				, cur.y * CELL_SIZE + 1 , CELL_SIZE - 2, CELL_SIZE - 2);
 		}
 	}
 }
 window.focus();
-// 为窗口的按键事件绑定事件监听器
+//adding keylistener to the browser
 window.onkeydown = function(evt)
 {
 	switch(evt.keyCode)
 	{
-		// 按下了“向下”箭头
+		// If user pressed the down key
 		case 40:
 			if(!isPlaying)
 				return;
 			moveDown();
 			break;
-		// 按下了“向左”箭头
+		// If user pressed the left key 
 		case 37:
 			if(!isPlaying)
 				return;
 			moveLeft();
 			break;
-		// 按下了“向右”箭头
+		// If user pressed the right key
 		case 39:
 			if(!isPlaying)
 				return;
 			moveRight();
 			break;
-		// 按下了“向上”箭头
+		// If user pressed the up key
 		case 38:
 			if(!isPlaying)
 				return;
