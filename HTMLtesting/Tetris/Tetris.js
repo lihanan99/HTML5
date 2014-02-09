@@ -145,98 +145,101 @@ var createCanvas = function(rows , cols , cellWidth, cellHeight)
 	// Draw
 	tetris_ctx.stroke();
 }
-// 绘制俄罗斯方块的状态
+// Drawing the Tetriminos.
 var drawBlock = function()
 {
 	for (var i = 0; i < TETRIS_ROWS ; i++ )
 	{
 		for (var j = 0; j < TETRIS_COLS ; j++ )
 		{
-			// 有方块的地方绘制颜色
+			// Draw color on cells that are not NO_BLOCK (with different color)
 			if(tetris_status[i][j] != NO_BLOCK)
 			{
-				// 设置填充颜色
+				// setting up the color
 				tetris_ctx.fillStyle = colors[tetris_status[i][j]];
-				// 绘制矩形
+				// draw on the center of each cell.
 				tetris_ctx.fillRect(j * CELL_SIZE + 1 
 					, i * CELL_SIZE + 1, CELL_SIZE - 2 , CELL_SIZE - 2);
 			}
-			// 没有方块的地方绘制白色
+			// Draw white on NO_BlOCK cells
 			else
 			{
-				// 设置填充颜色
+				//Setting up color up to white.
 				tetris_ctx.fillStyle = 'white';
-				// 绘制矩形
 				tetris_ctx.fillRect(j * CELL_SIZE + 1 
 					, i * CELL_SIZE + 1 , CELL_SIZE - 2 , CELL_SIZE - 2);
 			}
 		}
 	}
 }
-// 当页面加载完成时，执行该函数里的代码。
+// On load function for the window.
 window.onload = function()
 {
-	// 创建canvas组件
+	// Creating the canvas object and attach it to the body of the HTML page
 	createCanvas(TETRIS_ROWS , TETRIS_COLS , CELL_SIZE , CELL_SIZE);
 	document.body.appendChild(tetris_canvas);
+	// Get the speed, the Score, and the highest Score to respect global variable.
 	curScoreEle = document.getElementById("curScoreEle");
 	curSpeedEle = document.getElementById("curSpeedEle");
 	maxScoreEle = document.getElementById("maxScoreEle");
-	// 读取Local Storage里的tetris_status记录
+	// Load the data about tetris_status from the local storage. 
 	var tmpStatus = localStorage.getItem("tetris_status");
+	// Conditional operator to check if temStatus is null or not
 	tetris_status = tmpStatus == null ? tetris_status : JSON.parse(tmpStatus);
-	// 把方块状态绘制出来
+	// Draw the Cells
 	drawBlock();
-	// 读取Local Storage里的curScore记录
+	// Load the current score from local storage
 	curScore = localStorage.getItem("curScore");
 	curScore = curScore == null ? 0 : parseInt(curScore);
 	curScoreEle.innerHTML = curScore;
-	// 读取Local Storage里的maxScore记录
+	// load the highest score;
 	maxScore = localStorage.getItem("maxScore");
 	maxScore = maxScore == null ? 0 : parseInt(maxScore);
 	maxScoreEle.innerHTML = maxScore;
-	// 读取Local Storage里的curSpeed记录
+	// load the current speed
 	curSpeed = localStorage.getItem("curSpeed");
 	curSpeed = curSpeed == null ? 1 : parseInt(curSpeed);
 	curSpeedEle.innerHTML = curSpeed;
-	// 初始化正在下掉的方块
+	// Initialing the blocks
 	initBlock();
-	// 控制每隔固定时间执行一次向下”掉“
+	//  Set the interval for moving down. 
 	curTimer = setInterval("moveDown();" ,  500 / curSpeed);
 }
-// 判断是否有一行已满
+// Checking if any line is full
 var lineFull = function()
 {
-	// 依次遍历每一行
+	// Go through every single line 
 	for (var i = 0; i < TETRIS_ROWS ; i++ )
 	{
 		var flag = true;
-		// 遍历当前行的每个单元格
 		for (var j = 0 ; j < TETRIS_COLS ; j++ )
 		{
 			if(tetris_status[i][j] == NO_BLOCK)
 			{
+				//set the flag if any of the cells is NO_BLOCK
 				flag = false;
 				break;
 			}
 		}
-		// 如果当前行已全部有方块了
+		// if a line is a full cells.
 		if(flag)
 		{
-			// 将当前积分增加100
+			// Adding 100 to the score
 			curScoreEle.innerHTML = curScore+= 100;
-			// 记录当前积分
+			// Store the current score to the local storage.
 			localStorage.setItem("curScore" , curScore);
-			// 如果当前积分达到升级极限。
+			// If current score is better than level scores
+			// The speed will go up --> level up
 			if( curScore >= curSpeed * curSpeed * 500)
 			{
 				curSpeedEle.innerHTML = curSpeed += 1;
-				// 使用Local Storage记录curSpeed。
+				// store the current speed to the localStorage.
 				localStorage.setItem("curSpeed" , curSpeed);
 				clearInterval(curTimer);
 				curTimer = setInterval("moveDown();" ,  500 / curSpeed);
 			}
-			// 把当前行的所有方块下移一行。
+			// After finding the a full-cell line, clearing up the lines.
+			//And moving above cells down. 
 			for (var k = i ; k > 0 ; k--)
 			{
 				for (var l = 0; l < TETRIS_COLS ; l++ )
@@ -244,8 +247,8 @@ var lineFull = function()
 					tetris_status[k][l] =tetris_status[k-1][l];
 				}
 			}
-			// 消除方块后，重新绘制一遍方块
-			drawBlock();      //②
+			//redraw the cells
+			drawBlock();      3
 		}
 	}
 }
